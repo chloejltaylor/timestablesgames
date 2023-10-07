@@ -1,0 +1,100 @@
+{"frames": {
+
+"button-back-active.png":
+{
+	"frame": {"x":1,"y":441,"w":119,"h":119},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":119},
+	"sourceSize": {"w":119,"h":119}
+},
+"button-back-idle.png":
+{
+	"frame": {"x":122,"y":441,"w":119,"h":119},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":119},
+	"sourceSize": {"w":119,"h":119}
+},
+"button-home-active.png":
+{
+	"frame": {"x":1,"y":562,"w":119,"h":119},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":119},
+	"sourceSize": {"w":119,"h":119}
+},
+"button-home-idle.png":
+{
+	"frame": {"x":122,"y":562,"w":119,"h":119},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":119},
+	"sourceSize": {"w":119,"h":119}
+},
+"button-pause-active.png":
+{
+	"frame": {"x":1,"y":683,"w":119,"h":119},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":119},
+	"sourceSize": {"w":119,"h":119}
+},
+"button-pause-idle.png":
+{
+	"frame": {"x":122,"y":683,"w":119,"h":119},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":119},
+	"sourceSize": {"w":119,"h":119}
+},
+"button-play-active.png":
+{
+	"frame": {"x":1,"y":804,"w":119,"h":119},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":119},
+	"sourceSize": {"w":119,"h":119}
+},
+"button-play-idle.png":
+{
+	"frame": {"x":122,"y":804,"w":119,"h":119},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":119},
+	"sourceSize": {"w":119,"h":119}
+},
+"button-playbig-active.png":
+{
+	"frame": {"x":1,"y":1,"w":218,"h":218},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":218,"h":218},
+	"sourceSize": {"w":219,"h":219}
+},
+"button-playbig-idle.png":
+{
+	"frame": {"x":1,"y":221,"w":218,"h":218},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":218,"h":218},
+	"sourceSize": {"w":219,"h":219}
+},
+"fullscreen.png":
+{
+	"frame": {"x":1,"y":925,"w":88,"h":74},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":4,"w":88,"h":74},
+	"sourceSize": {"w":95,"h":82}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "spritesheet_buttons.png",
+	"format": "RGBA8888",
+	"size": {"w":242,"h":1000},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:8f49404f043c3f090439c73ae67ffed5:f8f2b76536df4417dd619179a3d3b8d7:f46bef5d5bfeac0e0999d3ab59809a15$"
+}
+}
