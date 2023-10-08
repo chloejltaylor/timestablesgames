@@ -17,8 +17,8 @@ export default class Bouncer extends Shared
     arrowLeft
     arrowRight
     timestable
-    playerGravity = 200
-    playerBounceVelocity = 300
+    playerGravity = 180
+    playerBounceVelocity = 500
     numberOfLevels = 6
     gameInProgress = true
     level = 0
@@ -106,7 +106,7 @@ export default class Bouncer extends Shared
         this.trampoline =  this.physics.add.staticSprite(cX, cY+2000*scalefactor, 'trampoline').setScale(scalefactor)
 
         // Create player
-        this.player = this.physics.add.sprite(cX, cY, 'spritesheet-core','player.png').setScale(scalefactor).setGravityY(this.playerGravity).setDepth(2)
+        this.player = this.physics.add.sprite(cX, cY, 'spritesheet-core','player.png').setScale(scalefactor).setGravityY(this.playerGravity*this.scalefactor).setDepth(2)
         this.physics.add.collider(this.platforms, this.player, this.handleBounce, undefined, this)
         this.physics.add.collider(this.trampoline, this.player, this.handleTrampoline, undefined, this)
         this.cameras.main.startFollow(this.player)
@@ -310,7 +310,7 @@ export default class Bouncer extends Shared
     {
         if(this.player.body.touching.down){
             this.player.setVelocityX(0)
-            this.player.setVelocityY(-this.playerBounceVelocity)
+            this.player.setVelocityY(-this.playerBounceVelocity*this.scalefactor)
             if (this.player.frame.name == 'player.png' || this.player.frame.name == 'player-hurt-middle.png'){
                 this.player.setTexture('spritesheet-core', 'player-jump.png')
                 this.sound.play('pop')

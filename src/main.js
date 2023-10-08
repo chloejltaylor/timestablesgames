@@ -34,7 +34,7 @@ window.addEventListener('load', () => {
         gravity: {
           y: 0,
         },
-        debug: true,
+        debug: false,
       },
     },
     scale: {
