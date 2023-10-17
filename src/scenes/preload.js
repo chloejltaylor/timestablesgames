@@ -59,13 +59,14 @@ preload()
     this.load.audio('pop', 'sounds/pop.wav')
     this.load.audio('fanfare', 'sounds/fanfare.wav')
     this.load.audio('fanfare-silly', 'sounds/fanfare-silly.wav')
+    this.load.audio('ping', 'sounds/ping.wav')
    
 }
 
 create()
 {
   
-    this.scene.start('bouncer')
+    this.scene.start('title')
 
 }
 

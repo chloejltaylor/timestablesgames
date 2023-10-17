@@ -25,7 +25,7 @@ init(data) {
 create()
 {
 
-    console.log("HERE! "+ this.numberchosen)
+    console.log("GAME TITLE! "+ this.numberchosen)
 
     this.scene.run('ui')
     this.scene.run('shared')
@@ -33,15 +33,16 @@ create()
     this.getScale()
     let cX = this.cX
     let cY = this.cY
-    let scale = this.scale
+    let scalefactor = this.scalefactor
 
+    this.background = this.add.image(cX, cY,  'background-title').setScale(scalefactor)
 
-    this.background = this.add.image(cX, cY,  'background-title').setScale(scale).setAlpha(0.1)
-    this.title = this.add.image(cX-200, cY-150*scale,  'spritesheet-core', 'gameicon-'+this.gameTitle+'.png').setScale(scale)
-    this.number = this.add.image(cX+200, cY-150*scale,  'spritesheet-core', 'intronum-'+this.numberchosen+'.png').setScale(scale)
+    // this.background = this.add.image(cX, cY,  'background-title').setScale(scale).setAlpha(1)
+    this.title = this.add.image(cX-200, cY-150*scalefactor,  'spritesheet-core', 'gameicon-'+this.gameTitle+'.png').setScale(scalefactor)
+    this.number = this.add.image(cX+200, cY-150*scalefactor,  'spritesheet-core', 'intronum-'+this.numberchosen+'.png').setScale(scalefactor)
 
-    this.playbutton = this.add.image(cX, cY+150*scale,  'spritesheet-buttons','button-playbig-idle.png').setScale(scale)
-    // this.enterAnimation()
+    this.playbutton = this.add.image(cX, cY+150*scalefactor,  'spritesheet-buttons','button-playbig-idle.png').setScale(scalefactor)
+    this.enterAnimation()
 
   this.playbutton.setInteractive().on('pointerdown', pointer =>
   {

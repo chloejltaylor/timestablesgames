@@ -173,8 +173,8 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../games/shared/arrow-left-pink.png</key>
-            <key type="filename">../games/shared/arrow-right-pink.png</key>
+            <key type="filename">../games/shared/arrow-left.png</key>
+            <key type="filename">../games/shared/arrow-right.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -183,9 +183,24 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>35,25,70,49</rect>
+                <rect>63,45,125,89</rect>
                 <key>scale9Paddings</key>
-                <rect>35,25,70,49</rect>
+                <rect>63,45,125,89</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../games/shared/player-beamed.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>48,51,97,101</rect>
+                <key>scale9Paddings</key>
+                <rect>48,51,97,101</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -638,8 +653,6 @@
                     <filename>../titlescreens/gameicon-spinner.png</filename>
                     <filename>../titlescreens/title-main.png</filename>
                     <filename>../titlescreens/paused.png</filename>
-                    <filename>../games/shared/arrow-left-pink.png</filename>
-                    <filename>../games/shared/arrow-right-pink.png</filename>
                     <filename>../games/shared/player-dead.png</filename>
                     <filename>../games/shared/player-hurt-left.png</filename>
                     <filename>../games/shared/player-hurt-middle.png</filename>
@@ -648,6 +661,9 @@
                     <filename>../games/shared/player-zoom.png</filename>
                     <filename>../games/shared/player.png</filename>
                     <filename>../games/shared/player-celebrate.png</filename>
+                    <filename>../games/shared/player-beamed.png</filename>
+                    <filename>../games/shared/arrow-left.png</filename>
+                    <filename>../games/shared/arrow-right.png</filename>
                 </array>
             </struct>
         </map>

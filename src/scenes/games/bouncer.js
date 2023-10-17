@@ -12,19 +12,24 @@ export default class Bouncer extends Shared
     starsbad
     collectablesCollected = 0
     collectablesCollectedText
-    // difficultyfactor = 1
-    activeBadstars = 0
     arrowLeft
     arrowRight
     timestable
-    playerGravity = 180
+    playerGravity = 260
     playerBounceVelocity = 500
     numberOfLevels = 6
     gameInProgress = true
+    gameEnded = false
     level = 0
     levelStar
-    particles
-
+    particlesWhite
+    particlesZoom
+    platformGap = 300
+    highestTimesTable = 5
+    levelStarXArray
+    levelStarYArray
+    numBounces=0
+    waitTime =800
 
     constructor() 
     {
@@ -34,9 +39,8 @@ export default class Bouncer extends Shared
     init(data)
     {
         this.starsCollected = 0
-        // this.difficultyfactor = 1
-        // this.timestable = data.timestable
-        this.timestable = 2
+       this.timestable = data.timestable
+        // this.timestable = 3
     }
 
     create()
@@ -47,7 +51,7 @@ export default class Bouncer extends Shared
         let scalefactor = this.scalefactor
 
         this.scene.run('ui')
-
+        
         this.add.image(cX, cY, 'background-dark').setScale(scalefactor).setScrollFactor(0)
         this.add.image(cX, cY+400*scalefactor, 'background-dark').setScale(scalefactor).setScrollFactor(0)
 
@@ -71,34 +75,21 @@ export default class Bouncer extends Shared
         // Platform creation 
         this.platforms = this.physics.add.staticGroup()
 
-        for(let i=0; i<5; i++){
+        for(let i=0; i<this.highestTimesTable; i++){
             const x = Phaser.Math.Between(cX-200*scalefactor, cX+200*scalefactor)
-            const y = cY-300*scalefactor-(300*scalefactor * i)
+            const y = cY+this.platformGap*scalefactor-(this.platformGap*scalefactor * i)
             const platform = this.platforms.create(x, y, 'spritesheet-games', 'platform-level0.png') 
             
             platform.body.checkCollision.down = false
             platform.body.checkCollision.left = false
             platform.body.checkCollision.right = false
 
-            platform.scale = 1
-
-
+            // Make bottom platform central so player lands on it
             const platformsList = this.platforms.getChildren()
-
-
-            // Make bottom platform central 
-                if(i==4){
-                    platformsList[4].x = cX
-                }
-            // make next one up to the side
-                if(i==3){
-                    let rand01 = Phaser.Math.Between(0, 1)
-                    let startingpositionplatform2array = [cX-300*scalefactor,cX+300*scalefactor]
-                    platformsList[3].x = startingpositionplatform2array[rand01]
-                }
-            
-                const body = platform.body
-                body.updateFromGameObject()
+            platformsList[0].x = cX
+        
+            const body = platform.body
+            body.updateFromGameObject()
 
         }
 
@@ -106,28 +97,32 @@ export default class Bouncer extends Shared
         this.trampoline =  this.physics.add.staticSprite(cX, cY+2000*scalefactor, 'trampoline').setScale(scalefactor)
 
         // Create player
+        // this.player = this.physics.add.sprite(cX, cY, 'spritesheet-core','player.png').setScale(scalefactor).setGravityY(0).setDepth(2)
+
         this.player = this.physics.add.sprite(cX, cY, 'spritesheet-core','player.png').setScale(scalefactor).setGravityY(this.playerGravity*this.scalefactor).setDepth(2)
         this.physics.add.collider(this.platforms, this.player, this.handleBounce, undefined, this)
         this.physics.add.collider(this.trampoline, this.player, this.handleTrampoline, undefined, this)
         this.cameras.main.startFollow(this.player)
         this.cameras.main.setDeadzone(this.scale.width * 1.5)
+        
 
         //arrow keys
-        this.arrowLeft = this.add.image(cX-400, cY, 'spritesheet-core','arrow-left-pink.png').setDepth(2).setScale(scalefactor).setScrollFactor(0).setInteractive()
-        this.arrowRight = this.add.image(cX+400, cY, 'spritesheet-core','arrow-right-pink.png').setDepth(2).setScale(scalefactor).setScrollFactor(0).setInteractive()
+        this.arrowLeft = this.add.image(cX-400, cY, 'spritesheet-core','arrow-left.png').setDepth(2).setScale(scalefactor).setScrollFactor(0).setInteractive()
+        this.arrowRight = this.add.image(cX+400, cY, 'spritesheet-core','arrow-right.png').setDepth(2).setScale(scalefactor).setScrollFactor(0).setInteractive()
         this.arrowLeft.on('pointerdown', pointer => {if(this.gameInProgress){this.player.setVelocityX(-200)}})
         this.arrowLeft.on('pointerup', pointer => {if(this.gameInProgress){this.player.setVelocityX(0)}})
         this.arrowRight.on('pointerdown', pointer => {if(this.gameInProgress){this.player.setVelocityX(200)}})
         this.arrowRight.on('pointerup', pointer => {if(this.gameInProgress){this.player.setVelocityX(0)}})
 
         //level indicator star
-        const levelStar1 = this.add.image(cX+320, cY+280*scalefactor, 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
-        const levelStar2 = this.add.image(cX+380, cY+280*scalefactor, 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
-
-        const levelStar3 = this.add.image(cX+440, cY+280*scalefactor, 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
-        const levelStar4 = this.add.image(cX+320, cY+360*scalefactor, 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
-        const levelStar5 = this.add.image(cX+380, cY+360*scalefactor, 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
-        const levelStar6 = this.add.image(cX+440, cY+360*scalefactor, 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
+        this.levelStarXArray = [cX+320, cX+380, cX+440, cX+320, cX+380, cX+440]
+        this.levelStarYArray = [cY+280*scalefactor, cY+280*scalefactor, cY+280*scalefactor, cY+360*scalefactor, cY+360*scalefactor, cY+360*scalefactor]
+        const levelStar1 = this.add.image(this.levelStarXArray[0], this.levelStarYArray[0], 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
+        const levelStar2 = this.add.image(this.levelStarXArray[1], this.levelStarYArray[1], 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
+        const levelStar3 = this.add.image(this.levelStarXArray[2], this.levelStarYArray[2], 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
+        const levelStar4 = this.add.image(this.levelStarXArray[3], this.levelStarYArray[3], 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
+        const levelStar5 = this.add.image(this.levelStarXArray[4], this.levelStarYArray[4], 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
+        const levelStar6 = this.add.image(this.levelStarXArray[5], this.levelStarYArray[5], 'spritesheet-games', 'starSetEmpty.png').setScale(scalefactor).setScrollFactor(0)
         this.levelStar = [levelStar1, levelStar2, levelStar3, levelStar4, levelStar5, levelStar6]
 
 
@@ -145,38 +140,13 @@ export default class Bouncer extends Shared
         //Rocks
 
         this.rocks = this.physics.add.group()
-
         this.physics.add.collider(this.rocks, this.player, this.handleRockCollide, undefined, this)
-
-
-
-    //particles
-
-    // this.particles = this.add.particles('spritesheet-particles')
-
-
-    // const emitter = this.particles.createEmitter({
-    //     frame: ['yellow.png', 'white.png', 'green.png'],
-    //     lifespan:500,
-    //     speed: 100,
-    //     scale: { start: .8, end: 0 },
-    //     blendMode: 'ADD',
-    //     gravityY: 150,
-    // });
-
-    // this.particles.x = this.player.x
-    // this.particles.y = this.player.y
-    // this.particles.setScrollFactor(0)
-
-
-
+ 
+        
     }
 
     update()
     {
-
-        // this.particles.x = this.player.x
-        // this.particles.y = this.player.y
 
         // update the platform bodies so they can be bounced on when moving
         this.platforms.children.iterate(platform => {
@@ -191,36 +161,70 @@ export default class Bouncer extends Shared
 
         this.platforms.children.iterate(platform => {
             const scrollY = this.cameras.main.scrollY
-            if (platform.y >= scrollY + 1200*this.scalefactor) {
-                // platform.setTexture('spritesheet-games', 'platform-level'+this.level+'.png')
-                platform.y = scrollY - 300*this.scalefactor
+            if (platform.y >= scrollY + this.platformGap*(this.highestTimesTable-1)*this.scalefactor) {
+                platform.y = scrollY - (this.platformGap-1)*this.scalefactor
                 platform.x = Phaser.Math.Between(this.cX-200*this.scalefactor, this.cX+200*this.scalefactor)
                 platform.body.updateFromGameObject()
-                // platform.scale = this.difficultyfactor
-
 
                 //add stars to collect
-                this.addCollectableAbove(platform)
+                if(this.level!=0){
+                    this.addCollectableAbove(platform)
+                }
+                
+                this.platforms.children.iterate(platform => {
+                    platform.setTexture('spritesheet-games', 'platform-level'+this.level+'.png')
+                })
 
+                // start level 1
+                if (this.numBounces == 3){
+                    this.level =1
+                    this.platforms.children.iterate(platform => {
+                        this.time.delayedCall(500, ()=>platform.setTexture('spritesheet-games', 'platform-level1.png'), [], this)
+                        this.tweens.chain({
+                            targets: [platform],
+                
+                            tweens: [
+                                {
+                                    scale: 0,
+                                    alpha: 0,
+                                    ease: 'Sine.easeInOut',
+                                    duration: 500,
+                                    yoyo:true,
+                                },
+                            ]
+                        })
+                    })
+                }
 
-
-            //moving platforms
+        
+           //move platforms in platforms level
             
-            if(this.level==3){
-                console.log('level3')
+            if(this.level==4){
                 this.movePlatforms(platform)
             }
 
             //drop rocks in rock level
 
-            if(this.level==0){
-                console.log('level4')
+            if(this.level==5){
                 this.addRocks()
             }
-               
+
+            if(this.level==6){
+                this.addRocks()
+                this.addRocks()
+                this.addRocks()
+            }
+
+            // end game 
+            if(this.level==7){
+                this.gameEnded = true
+                this.gameEndAnimation()
+            }
+                
+
+              
              }
         })
-
 
         // switch back to player texture when falling
         const vy = this.player.body.velocity.y
@@ -230,14 +234,24 @@ export default class Bouncer extends Shared
         this.player.setTexture('spritesheet-core', 'player.png')
         }
 
-        // update position of trampoline 
+        // update position of trampoline and remove stars when the player falls
 
         const bottomPlatform = this.findBottommostPlatform()
-        if (this.player.y > bottomPlatform.y + 1000){
-            this.trampoline.y = bottomPlatform.y + 1200
+
+        if (this.player.y > bottomPlatform.y + 700){
+            this.trampoline.y = bottomPlatform.y + 900
             const trampolinebody = this.trampoline.body
             trampolinebody.updateFromGameObject()
         }
+
+        if (this.player.y > bottomPlatform.y + 500){
+            const allCollectables = this.collectables.getChildren()
+            for(let i=0; i<allCollectables.length; i++){
+                this.collectables.killAndHide(allCollectables[i])
+                this.physics.world.disableBody(allCollectables[i].body)
+            }
+        }
+
 
         // set limits of player movement left and right 
 
@@ -262,7 +276,7 @@ export default class Bouncer extends Shared
             {
         
                 const randNo = Phaser.Math.Between(this.cX-150*this.scalefactor, this.cX+150*this.scalefactor)
-                const y = sprite.y - 100*this.scalefactor
+                const y = sprite.y - 150*this.scalefactor
                 const x = randNo
                 const collectable = this.collectables.get(x, y, 'spritesheet-games', 'star'+this.timestable+'.png')
                 collectable.setActive(true)
@@ -277,19 +291,29 @@ export default class Bouncer extends Shared
 
     addRocks()
     {
-        const xPos = Phaser.Math.Between(-400, 400);
-        const rock = this.rocks.get(this.cX + xPos*this.scalefactor, this.player.y-1000*this.scalefactor, 'spritesheet-games', 'rock.png').setGravityY(50)
+        const xPos = Phaser.Math.Between(-400, 400)
+        const rock = this.rocks.get(this.cX + xPos*this.scalefactor, this.player.y-Phaser.Math.Between(1000, 3500)*this.scalefactor, 'spritesheet-games', 'rock.png').setGravityY(50)
         rock.setActive(true)
         rock.setVisible(true)
         this.add.existing(rock)
         rock.body.setSize(rock.width, rock.height)
         this.physics.world.enable(rock)
+        this.tweens.chain({
+            targets: [rock],
+
+            tweens: [
+                {
+                    
+                    angle: 360,
+                    duration: 1000,
+                    repeat: -1                },
+            ]
+        })
         return rock
     }
 
     movePlatforms(platform)
     {
-        console.log(platform)
         this.tweens.chain({
             targets: [platform],
 
@@ -305,18 +329,33 @@ export default class Bouncer extends Shared
         })
     }
 
+    stopPlatforms(platform)
+    {
+        this.tweens.chain({
+            targets: [platform],
+
+            tweens: [
+                {
+                    
+                    x: platform.x,
+                    ease: 'Sine.easeInOut',
+                    duration: 1300,
+                    yoyo:true,
+                    repeat: -1                },
+            ]
+        })    }
+
 
     handleBounce()
     {
         if(this.player.body.touching.down){
+            this.numBounces++
             this.player.setVelocityX(0)
             this.player.setVelocityY(-this.playerBounceVelocity*this.scalefactor)
             if (this.player.frame.name == 'player.png' || this.player.frame.name == 'player-hurt-middle.png'){
                 this.player.setTexture('spritesheet-core', 'player-jump.png')
                 this.sound.play('pop')
-
-                
-            }
+           }
         }
 
     }
@@ -324,17 +363,21 @@ export default class Bouncer extends Shared
     handleTrampoline()
     {
         if(this.player.body.touching.down){
-            this.player.setVelocityY(-700)
-                this.level = 0
+            this.player.setVelocityY(-1000*this.scalefactor)
+                this.level = 1
+                this.collectablesCollectedText.text = '0'
+
                 for(let i=0; i<this.numberOfLevels; i++ ){
                     this.levelStar[i].setTexture('spritesheet-games', 'starSetEmpty.png')
                 }
                 this.platforms.children.iterate(platform => {
-                    platform.setTexture('spritesheet-games', 'platform-level0.png')
+                    platform.setTexture('spritesheet-games', 'platform-level1.png')
+                    this.stopPlatforms(platform)
                 })
                 
                 this.player.setTexture('spritesheet-core', 'player-zoom.png')
                 this.sound.play('ting')
+
         }
     }
 
@@ -342,35 +385,41 @@ export default class Bouncer extends Shared
 
     handleCollect(player, collectable)
         {
+            this.sound.play('ping')
             this.collectables.killAndHide(collectable)
             this.physics.world.disableBody(collectable.body)
             this.collectablesCollected ++
             this.collectablesCollectedText.text = this.collectablesCollected*this.timestable
             
-            if(this.collectablesCollected==5){
+            if(this.collectablesCollected==this.highestTimesTable){
+
+
+                //remove stars
                 const allCollectables = this.collectables.getChildren()
                 for(let i=0; i<allCollectables.length; i++){
                     this.collectables.killAndHide(allCollectables[i])
                     this.physics.world.disableBody(allCollectables[i].body)
                 }
 
+                //effects
 
-                
+                this.completeSetAnimation()
+                this.sound.play('fanfare')
+
+                //logic
                 this.gameInProgress = false
                 this.collectablesCollected = 0
-                this.sound.play('fanfare')
                 this.player.setGravity(0)
                 this.player.setVelocityY(0)
                 this.player.setVelocityX(0)
-                this.completeSetAnimation()
-                // if(this.difficultyfactor>0.5){
-                //     this.difficultyfactor = this.difficultyfactor*0.9
-                // }
                 this.level++
+                console.log("level: "+this.level)
+                if(this.level<7){
+                    this.platforms.children.iterate(platform => {
+                        this.time.delayedCall(500, ()=>platform.setTexture('spritesheet-games', 'platform-level'+this.level+'.png'), [], this)
+                    })
+                }
 
-                this.platforms.children.iterate(platform => {
-                    platform.setTexture('spritesheet-games', 'platform-level'+this.level+'.png')
-                })
             }
 
 
@@ -378,7 +427,21 @@ export default class Bouncer extends Shared
 
     completeSetAnimation(){
         this.player.setTexture('spritesheet-core', 'player-celebrate.png')
-        this.levelStar[this.level].setTexture('spritesheet-games', 'starSet'+(this.level+1)+'.png')
+        this.levelStar[this.level-1].setTexture('spritesheet-games', 'starSet'+(this.level)+'.png')
+        this.particleBurst(this.levelStarXArray[this.level-1], this.levelStarYArray[this.level-1], ['white.png'], 500, 0, 50,70)
+        this.particleBurst(this.cX-370, this.cY+260*this.scalefactor, ['yellow.png', 'pink.png', 'yellow-orange.png','green.png', 'blue-light.png', 'green-blue.png'], 1000, 150, 20, 110)
+        // this.particleBurst(x,y,colour, lifespan, gravityY, noParticles, speed)
+
+        this.tweens.chain({
+            targets: [this.levelStar[this.level-1]],
+            tweens: [
+                {
+                    angle: 360,
+                    ease: 'Sine.easeInOut',
+                    duration: 1500,
+                },
+            ]
+        })
         this.tweens.chain({
             targets: [this.player],
             tweens: [
@@ -400,11 +463,28 @@ export default class Bouncer extends Shared
                 },
             ]
         })
+        this.platforms.children.iterate(platform => {
+            this.tweens.chain({
+                targets: [platform],
+    
+                tweens: [
+                    {
+                        scale: 0,
+                        alpha: 0,
+                        ease: 'Sine.easeInOut',
+                        duration: 500,
+                        yoyo:true,
+                    },
+                ]
+            })
+        })
+        
         this.time.delayedCall(
             1500, 
             ()=>{
-            this.player.setGravityY(this.playerGravity)
-            this.gameInProgress = true
+                this.player.setGravityY(this.playerGravity*this.scalefactor)
+                this.collectablesCollectedText.text = '0'
+                this.gameInProgress = true
             },
             [],
             this)
@@ -422,22 +502,121 @@ export default class Bouncer extends Shared
         rock.setVelocityX(-velocities[randNo])
     }
 
+    gameEndAnimation(){
+        console.log("game end")
+        this.level=0
+        this.cameras.main.stopFollow(this.player)
+        this.player.setGravityY(0)
+        this.player.setVelocityY(0)
+        this.player.setAlpha(0)
+        this.arrowLeft.setAlpha(0)
+        this.arrowRight.setAlpha(0)
+        const allCollectables = this.collectables.getChildren()
+        for(let i=0; i<allCollectables.length; i++){
+            this.collectables.killAndHide(allCollectables[i])
+            this.physics.world.disableBody(allCollectables[i].body)
+        }
+        const allPlatforms = this.platforms.getChildren()
+        for(let i=0; i<allPlatforms.length; i++){
+            this.platforms.killAndHide(allPlatforms[i])
+            this.physics.world.disableBody(allPlatforms[i].body)
+        }
+        let alien = this.add.image(this.player.x, this.cY, 'spritesheet-core', 'player.png').setScale(this.scalefactor).setScrollFactor(0).setDepth(3)
+        let spaceship = this.add.image(this.cX, this.cY-700*this.scalefactor, 'spritesheet-games', 'spaceship2.png').setScale(2*this.scalefactor).setScrollFactor(0).setDepth(3)
+        this.tweens.chain({
+            targets: [spaceship],
+            tweens: [
+                {
+                    y: this.cY-300*this.scalefactor,
+                    duration: 1000,
+                },
+                {
+                    y: this.cY-700*this.scalefactor,
+                    duration: 1000,
+                    delay: 4000
+                },
+            ]
+        })
+        this.time.delayedCall(1000,shinebeam, [], this)
+        function shinebeam(){
+            spaceship.setTexture('spritesheet-games', 'spaceship.png')
+            alien.setTexture('spritesheet-core', 'player-beamed.png')
+        }
+
+        this.time.delayedCall(2000, beamupalien, [], this)
+        function beamupalien(){
+
+            this.tweens.chain({
+                targets: [alien],
+                tweens: [
+                    {
+                        x: this.cX,
+                        y: this.cY-200*this.scalefactor,
+                        duration: 3000,
+                    },
+                    {
+                        alpha: 0,
+                        duration: 200,                       
+                    }
+                ]
+            })
+        }
+
+        this.time.delayedCall(5000, continueButtonAppear, [], this)
+        function continueButtonAppear(){
+           console.log("button appear")
+           let playbutton = this.add.image(this.cX, this.cY+150*this.scalefactor,  'spritesheet-buttons','button-playbig-idle.png').setScale(this.scalefactor).setScrollFactor(0)
+           playbutton.setInteractive().on('pointerdown', pointer =>
+            { 
+                this.buttonPress(playbutton)
+                this.time.delayedCall(
+                  this.waitTime,
+                  () => {
+                    this.scene.start('title')
+                  },
+                  [],
+                  this)
+                })
+            }
+
+    }
+
 
     findBottommostPlatform()
     {
         const platforms = this.platforms.getChildren()
         let bottomPlatform = platforms[0]
-
-        for(let i=0; i<platforms.length; ++i){
-            const platform = platforms[i]
-            if(platform.y < bottomPlatform) {
-                continue
-            } 
-            
-            bottomPlatform = platform
+        for(let i=0; i<platforms.length; i++){
+            if(platforms[i].y>bottomPlatform.y){
+                bottomPlatform = platforms[i]
+            }
         }
 
         return bottomPlatform
+    }
+
+    particleBurst(x, y, colour, lifespan, gravityY, noParticles, speed ){
+        
+    //particles
+
+        const particles = this.add.particles('spritesheet-particles')
+        const emitter = particles.createEmitter({
+            frame: colour,
+            lifespan: lifespan,
+            speed: speed,
+            scale: { start: .8, end: 0 },
+            blendMode: 'ADD',
+            gravityY: gravityY,
+        }).setScrollFactor(0)
+
+        emitter.explode(noParticles);
+
+        particles.x = x
+        particles.y = y
+
+        this.time.delayedCall(2000, function() {
+            particles.destroy();
+        })
     }
 
 }
